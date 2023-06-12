@@ -1,6 +1,6 @@
 import pygame
 
-# pygame.mixer.init()
+pygame.mixer.init()
 
 def generar_musica(path: str, volumen: float):
     '''
@@ -27,5 +27,5 @@ def generar_texto(fuente: str, tamaño: float, contenido: str, color: tuple):
     Recibe la fuente, el tamaño de la misma, el contenido de ese texto y el color
     Retorna la superficie de ese texto
     '''
-    fuente = pygame.font.SysFont("Arial", tamaño)
-    return fuente.render(contenido, True, color)
+    fuente_obtenida = pygame.font.SysFont(fuente, tamaño)
+    return fuente_obtenida.render(contenido, True, color)

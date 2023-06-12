@@ -12,8 +12,26 @@ def terminar_partida(cronometro: int, cantidad_movimientos: int, tablero: dict):
     Si el jugador gano cambia la pantalla y muestra (VICTORIA O DERROTA DEPENDIENDO DE LO QUE HAYA PASADO)
     Retorna True si la partida termino y False si no lo terminó.
     '''
-    pass
+    lista_tarjetas = tablero["tarjetas"]
+    lista_descubiertos = []
+    for tarjeta_simpson in lista_tarjetas:
+        if tarjeta_simpson["descubierto"] == True:
+            lista_descubiertos.append(tarjeta_simpson)
+    
+    if len(lista_tarjetas) == len(lista_descubiertos):
+        return True    
+    if cronometro <= 0 or cantidad_movimientos <= 0:
+        return False
+    
+    return None
 
+def reiniciar_partida(cronometro: int, cantidad_movimientos: int, tablero: dict):
+    '''
+    Reinicia el juego
+    '''
+    cronometro = TIEMPO_JUEGO
+    cantidad_movimientos = CANTIDAD_INTENTOS
+    tablero = tablero
 # Configuración inicial de pygame
 pygame.init()
 pantalla_juego = pygame.display.set_mode((ANCHO_PANTALLA, ALTO_PANTALLA))
@@ -30,7 +48,8 @@ cronometro = TIEMPO_JUEGO
 cantidad_movimientos = CANTIDAD_INTENTOS
 cantidad_tarjetas_cubiertas = CANTIDAD_TARJETAS_UNICAS * 2
 cantidad_tarjetas_descubiertas = 0
-
+img_game_over = pygame.image.load("{0}Game_Over.jpg".format(CARPETA_RECURSOS))
+img_game_over_re = pygame.transform.scale(img_game_over,(1000,1000))
 esta_corriendo = True
 
 while esta_corriendo:
@@ -38,10 +57,6 @@ while esta_corriendo:
     # Fijamos un valor de FPS
     clock_fps.tick(FPS)
     
-    # Verificamos si el juego termino
-    if terminar_partida(cronometro, cantidad_movimientos, tablero_juego):
-        pass
-
     # Manejamos los eventos
     for event in pygame.event.get():
         
@@ -50,23 +65,35 @@ while esta_corriendo:
             
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = event.pos
-            # SONIDO_CLICK.play()
+            print(pos)
+            SONIDO_CLICK.play()
             if tablero.detectar_colision(tablero_juego, pos) != None:
-                # SONIDO_VOLTEAR.play()
-                pass
-
+                CANTIDAD_INTENTOS -= 1
+                SONIDO_VOLTEAR.play()
         
         # Cada vez que pase un segundo restamos uno al tiempo del cronometro
         if event.type == evento_1000ms:
             cronometro -= 1
 
-        
+    texto_cronometro = utils.generar_texto("Arial Narrow",15,str(cronometro),COLOR_NEGRO)
+    cantidad_intentos = utils.generar_texto("Arial Narriw",15,str(CANTIDAD_INTENTOS),COLOR_NEGRO)
     tablero.actualizar_tablero(tablero_juego)
     
     # Dibujar pantalla
     pantalla_juego.fill(COLOR_BLANCO) # Pintamos el fondo de color blanco
+    # Verificamos si el juego termino
+    pantalla_juego.blit(texto_cronometro,(30,560))# Pintamos el tiempo que falta para terminar la partida
+    pantalla_juego.blit(cantidad_intentos,(60,560))# Pintamos el tiempo que falta para terminar la partida
     tablero.dibujar_tablero(tablero_juego, pantalla_juego)
-    
+
+    if terminar_partida(cronometro, CANTIDAD_INTENTOS, tablero_juego) == False:
+        pantalla_juego.fill(COLOR_NEGRO)
+        pantalla_juego.blit(img_game_over,(0,0))
+    elif terminar_partida(cronometro, CANTIDAD_INTENTOS, tablero_juego) == True:
+        pantalla_juego.fill(COLOR_NEGRO)
+        pantalla_juego.blit(img_game_over,(0,100))
+
+
     # Mostramos los cambios hechos
     pygame.display.flip()
 
