@@ -13,7 +13,7 @@ def crear_tablero():
     lista_cartas = generar_lista_tarjetas()
 
     tablero["tarjetas"] = lista_cartas
-    tablero["tiempo_ultimo_destape"] = 0
+    tablero["tiempo_ultimo_destape"] = pygame.time.get_ticks()
     tablero["primer_tarjeta_seleccionada"] = None
     tablero["segunda_tarjeta_seleccionada"] = None
     
@@ -112,7 +112,7 @@ def comprarar_tarjetas(tablero: dict) -> bool | None:
             tarjeta.descubrir_tarjetas(tablero["tarjetas"], tablero["primer_tarjeta_seleccionada"]["identificador"])
             retorno = True
         else:
-            utils.generar_musica("{0}equivocado.wav".format(CARPETA_RECURSOS),0.1)
+            SONIDO_ERROR.play()
     return retorno
 
 def dibujar_tablero(tablero: dict, pantalla_juego: pygame.Surface):
