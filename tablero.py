@@ -111,6 +111,8 @@ def comprarar_tarjetas(tablero: dict) -> bool | None:
         if tablero["primer_tarjeta_seleccionada"]["identificador"] == tablero["segunda_tarjeta_seleccionada"]["identificador"]:
             tarjeta.descubrir_tarjetas(tablero["tarjetas"], tablero["primer_tarjeta_seleccionada"]["identificador"])
             retorno = True
+        else:
+            utils.generar_musica("{0}equivocado.wav".format(CARPETA_RECURSOS),0.1)
     return retorno
 
 def dibujar_tablero(tablero: dict, pantalla_juego: pygame.Surface):

@@ -21,7 +21,7 @@ ALTO_TARJETA =int((ALTO_PANTALLA - ALTO_TEXTO)/ CANTIDAD_TARJETAS_V) # Alto en p
 TIEMPO_MOVIMIENTO = 3000 # Tiempo maximo que puede estar una tarjeta destapada
 FPS = 60 # Frames por segundo del juego
 TIEMPO_JUEGO = 30 # Tiempo maximo de juego
-CANTIDAD_INTENTOS = 5  # Cantidad de intentos de voltear tarjetas
+CANTIDAD_INTENTOS = 5 # Cantidad de intentos de voltear tarjetas
 CARPETA_RECURSOS = "recursos/" # Carpeta donde se encuentran los recursos
 
 # Audio

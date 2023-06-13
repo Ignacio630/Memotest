@@ -17,7 +17,7 @@ def generar_sonido(path: str, volumen: float):
     Recibe el path en donde se encuentra ese sonido y el volumen del mismo
     Retorna el sonido para esperar a que se ejecute
     '''
-    sonido = pygame.mixer.Sound(path)
+    sonido = pygame.mixer.Sound(path)  
     sonido.set_volume(volumen)
     return sonido
 

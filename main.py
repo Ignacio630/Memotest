@@ -2,6 +2,29 @@ import pygame
 from constantes import *
 import tablero
 
+# Configuración inicial de pygame
+pygame.init()
+pantalla_juego = pygame.display.set_mode((ANCHO_PANTALLA, ALTO_PANTALLA))
+pygame.display.set_caption('Los Simpsons Memotest')
+clock_fps = pygame.time.Clock()  # Creamos un Clock para poder fijar los FPS
+
+# Creamos eventos de tiempo
+evento_1000ms = pygame.USEREVENT
+pygame.time.set_timer(evento_1000ms, 1000)
+
+# Configuracion inicial del juego
+tablero_juego = tablero.crear_tablero()
+cronometro = TIEMPO_JUEGO
+cantidad_movimientos = CANTIDAD_INTENTOS
+cantidad_tarjetas_cubiertas = CANTIDAD_TARJETAS_UNICAS * 2
+cantidad_tarjetas_descubiertas = 0
+img_game_over = pygame.image.load("{0}Game_Over.jpg".format(CARPETA_RECURSOS))
+img_game_over_re = pygame.transform.scale(img_game_over, (1000, 1000))
+img_start = pygame.image.load("{0}start.png".format(CARPETA_RECURSOS))
+img_start_re = pygame.transform.scale(img_start, (ANCHO_PANTALLA, ALTO_PANTALLA))
+rect_img_start = img_start_re.get_rect()
+esta_corriendo = True
+
 
 def terminar_partida(cronometro: int, cantidad_movimientos: int, tablero: dict):
     '''
@@ -17,52 +40,36 @@ def terminar_partida(cronometro: int, cantidad_movimientos: int, tablero: dict):
     for tarjeta_simpson in lista_tarjetas:
         if tarjeta_simpson["descubierto"] == True:
             lista_descubiertos.append(tarjeta_simpson)
-    
+
     if len(lista_tarjetas) == len(lista_descubiertos):
-        return True    
+        return True
     if cronometro <= 0 or cantidad_movimientos <= 0:
         return False
-    
+
     return None
 
-def reiniciar_partida(cronometro: int, cantidad_movimientos: int, tablero: dict):
+
+def reiniciar_partida(cronometro_juego: int, cantidad_movimientos: int, tablero_juego: dict):
     '''
     Reinicia el juego
     '''
-    cronometro = TIEMPO_JUEGO
-    cantidad_movimientos = CANTIDAD_INTENTOS
-    tablero = tablero
-# Configuración inicial de pygame
-pygame.init()
-pantalla_juego = pygame.display.set_mode((ANCHO_PANTALLA, ALTO_PANTALLA))
-pygame.display.set_caption('Los Simpsons Memotest')
-clock_fps = pygame.time.Clock() # Creamos un Clock para poder fijar los FPS
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        pos = event.pos
+        if rect_img_start.collidepoint(pos):
+            print(pos)
 
-# Creamos eventos de tiempo
-evento_1000ms = pygame.USEREVENT
-pygame.time.set_timer(evento_1000ms, 1000)
-
-# Configuracion inicial del juego
-tablero_juego = tablero.crear_tablero()
-cronometro = TIEMPO_JUEGO
-cantidad_movimientos = CANTIDAD_INTENTOS
-cantidad_tarjetas_cubiertas = CANTIDAD_TARJETAS_UNICAS * 2
-cantidad_tarjetas_descubiertas = 0
-img_game_over = pygame.image.load("{0}Game_Over.jpg".format(CARPETA_RECURSOS))
-img_game_over_re = pygame.transform.scale(img_game_over,(1000,1000))
-esta_corriendo = True
 
 while esta_corriendo:
-    
+
     # Fijamos un valor de FPS
     clock_fps.tick(FPS)
-    
+
     # Manejamos los eventos
     for event in pygame.event.get():
-        
+
         if event.type == pygame.QUIT:
             esta_corriendo = False
-            
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = event.pos
             print(pos)
@@ -70,29 +77,36 @@ while esta_corriendo:
             if tablero.detectar_colision(tablero_juego, pos) != None:
                 CANTIDAD_INTENTOS -= 1
                 SONIDO_VOLTEAR.play()
-        
+
         # Cada vez que pase un segundo restamos uno al tiempo del cronometro
         if event.type == evento_1000ms:
             cronometro -= 1
 
-    texto_cronometro = utils.generar_texto("Arial Narrow",15,str(cronometro),COLOR_NEGRO)
-    cantidad_intentos = utils.generar_texto("Arial Narriw",15,str(CANTIDAD_INTENTOS),COLOR_NEGRO)
+    texto_cronometro = utils.generar_texto(
+        "Arial Narrow", 15, str(cronometro), COLOR_NEGRO)
+    cantidad_intentos = utils.generar_texto(
+        "Arial Narriw", 15, str(CANTIDAD_INTENTOS), COLOR_NEGRO)
     tablero.actualizar_tablero(tablero_juego)
-    
+
     # Dibujar pantalla
-    pantalla_juego.fill(COLOR_BLANCO) # Pintamos el fondo de color blanco
+    pantalla_juego.fill(COLOR_BLANCO)  # Pintamos el fondo de color blanco
     # Verificamos si el juego termino
-    pantalla_juego.blit(texto_cronometro,(30,560))# Pintamos el tiempo que falta para terminar la partida
-    pantalla_juego.blit(cantidad_intentos,(60,560))# Pintamos el tiempo que falta para terminar la partida
+    # Pintamos el tiempo que falta para terminar la partida
+    pantalla_juego.blit(texto_cronometro, (30, 560))
+    # Pintamos el tiempo que falta para terminar la partida
+    pantalla_juego.blit(cantidad_intentos, (60, 560))
     tablero.dibujar_tablero(tablero_juego, pantalla_juego)
 
     if terminar_partida(cronometro, CANTIDAD_INTENTOS, tablero_juego) == False:
         pantalla_juego.fill(COLOR_NEGRO)
-        pantalla_juego.blit(img_game_over,(0,0))
+        pantalla_juego.blit(img_game_over, (0, 0))
+        pantalla_juego.blit(img_start_re, (0, 0))
+        reiniciar_partida(cronometro, cantidad_movimientos, tablero_juego)
     elif terminar_partida(cronometro, CANTIDAD_INTENTOS, tablero_juego) == True:
         pantalla_juego.fill(COLOR_NEGRO)
-        pantalla_juego.blit(img_game_over,(0,100))
-
+        pantalla_juego.blit(img_game_over, (0, 100))
+        pantalla_juego.blit(img_start_re, (0, 0))
+        reiniciar_partida(cronometro, cantidad_movimientos, tablero_juego)
 
     # Mostramos los cambios hechos
     pygame.display.flip()
