@@ -86,13 +86,17 @@ def actualizar_tablero(tablero: dict) -> None:
     tiempo_transcurrido = tiempo_actual - tablero["tiempo_ultimo_destape"]
     lista_tarjetas = tablero["tarjetas"]
 
-    if tiempo_transcurrido > TIEMPO_MOVIMIENTO:
+    if tiempo_transcurrido > TIEMPO_MOVIMIENTO and tablero["tiempo_ultimo_destape"] > 0:
+        
         for tarjeta_simpson in lista_tarjetas:
             if comprarar_tarjetas(tablero):
                 tarjeta_simpson["visible"] == True
+                tablero["tiempo_ultimo_destape"] = -2000
+                tablero["primer_tarjeta_seleccionada"] = None
+                tablero["segunda_tarjeta_seleccionada"] = None
             if tarjeta_simpson["descubierto"] == False:
                 tarjeta_simpson["visible"] = False
-                tablero["tiempo_ultimo_destape"] = 0
+                tablero["tiempo_ultimo_destape"] = -2000
                 tablero["primer_tarjeta_seleccionada"] = None
                 tablero["segunda_tarjeta_seleccionada"] = None
 

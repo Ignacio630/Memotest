@@ -1,6 +1,7 @@
 import pygame
 from constantes import *
 import tablero
+import tarjeta
 
 # Configuración inicial de pygame
 pygame.init()
@@ -63,6 +64,10 @@ while esta_corriendo:
     # Fijamos un valor de FPS
     clock_fps.tick(FPS)
 
+    texto_cronometro = utils.generar_texto("Arial", TAMANIO_TEXTO, "Tiempo: {0}".format(cronometro), COLOR_NEGRO)
+    texto_cantidad_intentos = utils.generar_texto("Arial", TAMANIO_TEXTO, "Intentos: {0}".format(cantidad_movimientos), COLOR_NEGRO)
+    texto_cantidad_tarjetas_descubiertas = utils.generar_texto("Arial",TAMANIO_TEXTO,"Tarjetas: {0}/{1}".format(cantidad_tarjetas_descubiertas,cantidad_tarjetas_cubiertas),COLOR_NEGRO)
+    tablero.actualizar_tablero(tablero_juego)
     # Manejamos los eventos
     for event in pygame.event.get():
 
@@ -74,29 +79,26 @@ while esta_corriendo:
             print(pos)
             SONIDO_CLICK.play()
             if tablero.detectar_colision(tablero_juego, pos) != None:
-                cantidad_movimientos -= 1
                 SONIDO_VOLTEAR.play()
+                if tarjeta.obtener_cantidad_tarjetas_por_estado(tablero_juego["tarjetas"],False) == 1:
+                    cantidad_movimientos -= 1
+
 
         # Cada vez que pase un segundo restamos uno al tiempo del cronometro
         if event.type == evento_1000ms:
             cronometro -= 1
-
-    texto_cronometro = utils.generar_texto(
-        "Arial Narrow", 15, str(cronometro), COLOR_NEGRO)
-    texto_cantidad_intentos = utils.generar_texto(
-        "Arial Narriw", 15, str(cantidad_movimientos), COLOR_NEGRO)
-    tablero.actualizar_tablero(tablero_juego)
+    cantidad_tarjetas_descubiertas = tarjeta.obtener_cantidad_tarjetas_por_estado(tablero_juego["tarjetas"],True)
 
     # Dibujar pantalla
     pantalla_juego.fill(COLOR_BLANCO)  # Pintamos el fondo de color blanco
     # Verificamos si el juego termino
     # Pintamos el tiempo que falta para terminar la partida
-    pantalla_juego.blit(texto_cronometro, (30, 560))
-
+    pantalla_juego.blit(texto_cronometro, (0, ALTO_PANTALLA-TAMANIO_TEXTO))
+    pantalla_juego.blit(texto_cantidad_intentos, (0, ALTO_PANTALLA-TAMANIO_TEXTO*2))
+    pantalla_juego.blit(texto_cantidad_tarjetas_descubiertas,(0,ALTO_PANTALLA-TAMANIO_TEXTO*3))
     # pantalla_juego.blit((5,100))
     
     # Pintamos el tiempo que falta para terminar la partida
-    pantalla_juego.blit(texto_cantidad_intentos, (60, 560))
     tablero.dibujar_tablero(tablero_juego, pantalla_juego)
 
     terminar_partida(cronometro,cantidad_movimientos,tablero_juego)
